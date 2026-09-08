@@ -1,0 +1,246 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "88c0e8c6",
+   "metadata": {},
+   "source": [
+    "# 과제 3: Heap을 이용한 생일 데이터 처리"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "47fb49d2",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "--- 생일이 느린 순서 10명 ---\n",
+      "1위: 이윤서 (2006년 12월 27일)\n",
+      "2위: 정희원 (2006년 12월 21일)\n",
+      "3위: 김효린 (2006년 12월 16일)\n",
+      "4위: 이예은 (2006년 12월 9일)\n",
+      "5위: 김주영 (2006년 11월 20일)\n",
+      "6위: 전은빈 (2006년 11월 7일)\n",
+      "7위: 이하연 (2006년 9월 22일)\n",
+      "8위: 김우현 (2006년 9월 1일)\n",
+      "9위: 최윤지 (2006년 8월 30일)\n",
+      "10위: 유가현 (2006년 8월 22일)\n"
+     ]
+    }
+   ],
+   "source": [
+    "import csv\n",
+    "\n",
+    "# Heap 클래스 구현\n",
+    "class Heap:\n",
+    "    def __init__(self, *args):\n",
+    "        if len(args) != 0: self.__A = args[0]\n",
+    "        else: self.__A = []\n",
+    "    \n",
+    "    def insert(self, x):\n",
+    "        self.__A.append(x)\n",
+    "        self.__percolateUp(len(self.__A)-1)\n",
+    "        \n",
+    "    def __percolateUp(self, i:int):\n",
+    "        parent = (i - 1) // 2\n",
+    "        if i > 0 and self.__A[i] > self.__A[parent]:\n",
+    "            self.__A[i], self.__A[parent] = self.__A[parent], self.__A[i]\n",
+    "            self.__percolateUp(parent)\n",
+    "            \n",
+    "    def deleteMax(self):\n",
+    "        if not self.isEmpty():\n",
+    "            max_val = self.__A[0]\n",
+    "            if len(self.__A) == 1:\n",
+    "                self.__A.pop()\n",
+    "            else:\n",
+    "                self.__A[0] = self.__A.pop()\n",
+    "                self.__percolateDown(0)\n",
+    "            return max_val\n",
+    "        return None\n",
+    "\n",
+    "    def __percolateDown(self, i:int):\n",
+    "        child = 2 * i + 1\n",
+    "        right = 2 * i + 2\n",
+    "        if child <= len(self.__A)-1:\n",
+    "            if right <= len(self.__A)-1 and self.__A[child] < self.__A[right]:\n",
+    "                child = right\n",
+    "            if self.__A[i] < self.__A[child]:\n",
+    "                self.__A[i], self.__A[child] = self.__A[child], self.__A[i]\n",
+    "                self.__percolateDown(child)\n",
+    "\n",
+    "    def isEmpty(self) -> bool:\n",
+    "        return len(self.__A) == 0\n",
+    "\n",
+    "# 실행 코드\n",
+    "h = Heap()\n",
+    "try:\n",
+    "    with open('birthday.csv', mode='r', encoding='utf-8-sig') as file:\n",
+    "        reader = csv.reader(file)\n",
+    "        next(reader)\n",
+    "        for row in reader:\n",
+    "            if not row[1] or not row[2] or not row[3]: continue\n",
+    "            name = row[0].strip()\n",
+    "            birth_val = int(row[1]) * 10000 + int(row[2]) * 100 + int(row[3])\n",
+    "            h.insert((birth_val, name, row[1], row[2], row[3]))\n",
+    "\n",
+    "    print(\"--- 생일이 느린 순서 10명 ---\")\n",
+    "    for i in range(1, 11):\n",
+    "        res = h.deleteMax()\n",
+    "        if res:\n",
+    "            print(f\"{i}위: {res[1]} ({res[2]}년 {res[3]}월 {res[4]}일)\")\n",
+    "except FileNotFoundError:\n",
+    "    print(\"birthday.csv 파일을 찾을 수 없습니다.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "754e9a05",
+   "metadata": {},
+   "source": [
+    "# 과제 4: Circular Doubly Linked List를 이용한 조원 출력"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cd7d0039",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "--- 우리 조원 정보 ---\n",
+      "이름: 황다원, 생년월일: 2004년 10월 15일\n",
+      "이름: 박다인, 생년월일: 2005년 1월 19일\n",
+      "이름: 안예원, 생년월일: 2004년 7월 9일\n",
+      "이름: 정서하, 생년월일: 2006년 7월 20일\n",
+      "이름: 김우현, 생년월일: 2006년 9월 1일\n",
+      "이름: 양시언, 생년월일: 2006년 4월 18일\n",
+      "이름: 유가현, 생년월일: 2006년 8월 22일\n",
+      "이름: 이하연, 생년월일: 2006년 9월 22일\n",
+      "이름: 장예은, 생년월일: 2006년 3월 17일\n",
+      "이름: 전은빈, 생년월일: 2006년 11월 7일\n",
+      "이름: 정세희, 생년월일: 2004년 1월 27일\n",
+      "이름: 이예은, 생년월일: 2006년 12월 9일\n"
+     ]
+    }
+   ],
+   "source": [
+    "import csv\n",
+    "\n",
+    "# CircularDoublyLinkedList 구현 \n",
+    "class ListNode:\n",
+    "    def __init__(self, item, link=None, prev=None):\n",
+    "        self.item = item\n",
+    "        self.next = link\n",
+    "        self.prev = prev\n",
+    "\n",
+    "class CircularDoublyLinkedList:\n",
+    "    def __init__(self):\n",
+    "        self.__head = ListNode(None)\n",
+    "        self.__head.next = self.__head\n",
+    "        self.__head.prev = self.__head\n",
+    "        self.__numItems = 0\n",
+    "\n",
+    "    def append(self, item):\n",
+    "        newNode = ListNode(item, self.__head, self.__head.prev)\n",
+    "        self.__head.prev.next = newNode\n",
+    "        self.__head.prev = newNode\n",
+    "        self.__numItems += 1\n",
+    "\n",
+    "    def __iter__(self):\n",
+    "        curr = self.__head.next\n",
+    "        while curr != self.__head:\n",
+    "            yield curr.item\n",
+    "            curr = curr.next\n",
+    "\n",
+    "# 실행 코드\n",
+    "cdll = CircularDoublyLinkedList()\n",
+    "my_team = [\"황다원\", \"박다인\", \"안예원\", \"정서하\", \"김우현\", \"양시언\", \"유가현\", \"이하연\", \"장예은\", \"전은빈\", \"정세희\", \"이예은\"]\n",
+    "\n",
+    "try:\n",
+    "    with open('birthday.csv', mode='r', encoding='utf-8-sig') as file:\n",
+    "        reader = csv.reader(file)\n",
+    "        next(reader)\n",
+    "        for row in reader:\n",
+    "            # 생년월일이 없는 경우 예외처리 \n",
+    "            if not row[1] or not row[2] or not row[3]: continue\n",
+    "            cdll.append({'name': row[0].strip(), 'date': f\"{row[1]}년 {row[2]}월 {row[3]}일\"})\n",
+    "\n",
+    "    print(\"--- 우리 조원 정보 ---\")\n",
+    "    for person in cdll:\n",
+    "        if person['name'] in my_team:\n",
+    "            print(f\"이름: {person['name']}, 생년월일: {person['date']}\")\n",
+    "except FileNotFoundError:\n",
+    "    print(\"birthday.csv 파일을 찾을 수 없습니다.\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "827d3e6f",
+   "metadata": {},
+   "source": [
+    "# 과제 5: 우선 순위 큐 연습문제"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0ed8aa8f",
+   "metadata": {},
+   "source": [
+    "01 최대 힙에서 가장 큰 원소가 항상 루트에 있다. 즉, 루트의 깊이가 가장 얕다. 임의의 최대 힙에서 더 얕은 곳에 있는 원소가 더 깊은 곳에 있는 원소보다 더 작은 값을 가질 수 있는가?\n",
+    "➡️ O. 부모 자식 간의 관계가 아니라면 더 얕은 곳에 있는 원소가 더 깊은 곳에 있는 원소보다 더 작은 값을 가질 수 있음.\n",
+    "\n",
+    "02 최대 힙 A[0…n-1]에서 A[0]는 항상 가장 큰 값을 갖고 있다. 반대로 마지막 원소인 A[n-1]은 항상 가장 작은 값을 갖는가?\n",
+    "➡️ X. 부모노드의 키값보다만 같거나 작으면 되기 때문에 마지막 원소가 항상 가장 작은 값을 가지지 않음.\n",
+    "\n",
+    "03 임의의 배열 A[0…n-1]을 힙으로 만드는 buildHeap() 알고리즘에서 총 n개의 원소 중\n",
+    "루트의 자격으로 스며내리기를 할지 알아보지 않고 그냥 넘어가는 원소(힙의 노드) 수는 정확하게 몇 개인가?\n",
+    "➡️ n/2.\n",
+    "\n",
+    "04 배열 A[0…n-1]을 대상으로 하는 스며내리기 알고리즘에서 최악의 경우에 해당하는\n",
+    "시간과 최선의 경우에 해당하는 시간은 어떻게 되는가? Θ −표기로 나타내시오.\n",
+    "➡️ 최악의 경우: Θ(logn), 최선의 경우: Θ(1)\n",
+    "\n",
+    "05 힙인 상태에서 원소 삭제는 루트 노드만 대상으로 한다. 다른 경우는 존재하지 않는다. 테스트 목적으로 힙의 맨 마지막 원소를 삭제하는 작업을 요구한다면 간단한 일인가?\n",
+    "➡️ O. 맨 마지막 원소를 삭제하는 것은 배열의 크기를 1 줄이는 것만으로도 삭제가 완료되는 아주 간단한 일.\n",
+    "\n",
+    "06 어떤 학생이 다음과 같은 질문을 했다. “buildHeap() 알고리즘에서는 아래쪽에서부터\n",
+    "시작해서 스며내리기를 반복하는데 만약 반대 방향으로 하면 어떤가요?(즉, 위쪽에서부터\n",
+    "시작해서 스며오르기를 반복)” 이렇게 해도 힙이 만들어진다. 이 방법은 본문에 제시한\n",
+    "방법에 비해 더 효율적인가? 점근적 시간으로 말하시오.\n",
+    "➡️ 본문 방식: Θ(n), 학생 방식: Θ(nlogn). 학생이 말한 방식은 힙에 원소를 하나씩 삽입하는 것과 같기에 깊은 노드들이 각각 최대 logn의 수행시간을 가질 수 있어 더 불리함.\n",
+    "\n",
+    "07 n개의 원소로 이루어진 최대 힙에서 임의의 원소 값이 증가했을 때 O(log n) 시간에\n",
+    "이를 반영해서 힙을 수선할 수 있다. 어떻게 하면 되는지 그 과정을 기술하시오.\n",
+    "➡️ 값이 증가한 노드를 그 노드의 부모 노드와 값을 비교 → 부모 노드보다 값이 크다면 부모와 위치 교환 → 힙 성질을 만족할 때까지 스며오르기 반복 → O(log n) 시간에 힙 수선 완료"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.10"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
